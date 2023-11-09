@@ -80,6 +80,11 @@ export default class Substation extends BaseModel {
     return this.works?.length
   }
 
+  @computed()
+  public get fullNameSubstation() {
+    return `ПС ${this.voltage_class?.name} кВ ${this.name}`
+  }
+
   @hasMany(() => CompletedWork)
   public works: HasMany<typeof CompletedWork>
 
