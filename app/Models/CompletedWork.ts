@@ -1,6 +1,7 @@
 import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 
 import { DateTime } from 'luxon'
+import Substation from 'App/Models/Substation'
 import User from 'App/Models/User'
 
 export default class CompletedWork extends BaseModel {
@@ -41,4 +42,7 @@ export default class CompletedWork extends BaseModel {
     localKey: 'id'
   })
   public work_producer: BelongsTo<typeof User>
+
+  @belongsTo(() => Substation)
+  public substation: BelongsTo<typeof Substation>
 }
