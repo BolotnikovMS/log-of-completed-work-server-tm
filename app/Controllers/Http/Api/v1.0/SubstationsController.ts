@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import CompletedWork from 'App/Models/CompletedWork'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { IQueryParams } from 'App/Interfaces/QueryParams'
 import Substation from 'App/Models/Substation'
@@ -98,6 +98,36 @@ export default class SubstationsController {
         return response.status(200).json(serializeSubstation)
       }
       return response.status(404).json({ message: 'Не найдено!' })
+    } catch (error) {
+      console.log('error: ', error);
+      return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
+    }
+  }
+
+  public async getSubstationWorks({ params, request, response }: HttpContextContract) {
+    try {
+      const { offset = 0, limit = 10 } = await request.qs() as IQueryParams
+      const works = await CompletedWork
+        .query()
+        .where('substation_id', '=', params.id)
+        .if(offset && limit, query => query.offset(offset).limit(limit))
+        .preload('work_producer')
+      const serializeWorks = works.map(work => {
+        return work.serialize({
+          fields: {
+            pick: ['id', 'description', 'note', 'date_completion']
+          },
+          relations: {
+            work_producer: {
+              fields: {
+                pick: ['id', 'shortUserName']
+              }
+            }
+          }
+        })
+      })
+
+      return response.status(200).json(serializeWorks)
     } catch (error) {
       console.log('error: ', error);
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })

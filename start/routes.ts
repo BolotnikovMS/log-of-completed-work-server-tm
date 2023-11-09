@@ -62,6 +62,7 @@ Route.group(() => {
     Route.get('/', 'SubstationsController.index')
     Route.post('/', 'SubstationsController.store')
     Route.get('/:id/', 'SubstationsController.getInfoSubstation')
+    Route.get('/:id/works', 'SubstationsController.getSubstationWorks')
     Route.patch('/:id', 'SubstationsController.update')
     Route.delete('/:id', 'SubstationsController.destroy')
   })
