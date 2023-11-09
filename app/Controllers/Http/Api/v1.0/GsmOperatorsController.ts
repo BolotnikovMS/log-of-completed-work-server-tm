@@ -4,7 +4,7 @@ import GsmOperatorValidator from 'App/Validators/GsmOperatorValidator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { IQueryParams } from 'App/Interfaces/QueryParams'
 import { OrderByEnum } from 'App/Enums/Sorted'
-import Substation from 'App/Models/Substation'
+import SubstationService from 'App/Services/SubstationService'
 
 export default class GsmOperatorsController {
   public async index({ request, response }: HttpContextContract) {
@@ -17,25 +17,31 @@ export default class GsmOperatorsController {
 
       return response.status(200).json(gsmOperators)
     } catch (error) {
+      console.log(error);
+
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
     }
   }
 
   public async getSubstations({ params, request, response }: HttpContextContract) {
     try {
-      const gsmOperator = await GsmOperator.find(params.id)
+      const substations = await SubstationService.getSubstationByRelationId({colName: 'gsm_id', id: params.id, request})
+      const serializeSubstations = substations.map(substation => {
+        return substation.serialize({
+          fields: {
+            pick: ['id', 'name', 'gsmId', 'rdu', 'active', 'fullNameSubstation']
+          },
+          relations: {
+            voltage_class: {
+              fields: {
+                pick: ['name']
+              }
+            }
+          }
+        })
+      })
 
-      if (gsmOperator) {
-        const { sort, order, active } = request.qs() as IQueryParams
-        const substations = await Substation
-        .query()
-        .where('gsm_id', '=', gsmOperator.id)
-        .if(active, query => query.where('active', '=', ActiveEnum[active]))
-        .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
-
-        return response.status(200).json(substations)
-      }
-      return response.status(404).json({ message: 'Не найдено!' })
+      return response.status(200).json(serializeSubstations)
     } catch (error) {
       console.log(error);
 
