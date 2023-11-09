@@ -106,7 +106,7 @@ export default class SubstationsController {
 
   public async getSubstationWorks({ params, request, response }: HttpContextContract) {
     try {
-      const { offset = 0, limit = 10 } = await request.qs() as IQueryParams
+      const { offset = 0, limit = 10 } = request.qs() as IQueryParams
       const works = await CompletedWork
         .query()
         .where('substation_id', '=', params.id)
