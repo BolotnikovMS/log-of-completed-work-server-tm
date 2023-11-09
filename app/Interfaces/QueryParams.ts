@@ -1,4 +1,3 @@
-import { DateTime } from 'luxon'
 import { OrderByEnum } from 'App/Enums/Sorted'
 
 export interface IQueryParams {
@@ -10,6 +9,4 @@ export interface IQueryParams {
   active: string
   offset: number
   limit: number
-  start_date: DateTime
-  end_date: DateTime
 }
