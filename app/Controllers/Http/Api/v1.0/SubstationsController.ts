@@ -32,7 +32,7 @@ export default class SubstationsController {
     }
   }
 
-  public async getInfo({ params, request, response }: HttpContextContract) {
+  public async getInfoSubstation({ params, request, response }: HttpContextContract) {
     try {
       const substation = await Substation.find(params.id)
 
