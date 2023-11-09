@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { IQueryParams } from 'App/Interfaces/QueryParams'
 import Substation from 'App/Models/Substation'
@@ -36,14 +37,15 @@ export default class SubstationsController {
       const substation = await Substation.find(params.id)
 
       if (substation) {
-        const { offset = 0, limit = 10, start_date, end_date } = request.qs() as IQueryParams
-        console.log('start_date: ', start_date);
-        console.log('end_date: ', end_date);
+        const { offset = 0, limit = 10 } = request.qs() as IQueryParams
 
         await substation.load('works', queryWork => {
           queryWork
             .if(offset && limit, query => query.offset(offset)).limit(limit)
-            .if(start_date && end_date, query => query)
+            // .if(start_date && end_date && +new Date(start_date) < +new Date(end_date), query => {
+            //   console.log(true);
+            //   query.whereBetween('date_completion', [new DateTime(start_date).toSQL(), new DateTime(end_date).toSQL()])
+            // })
         })
         await substation.load('district')
         await substation.load('voltage_class')
