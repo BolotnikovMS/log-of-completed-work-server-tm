@@ -7,13 +7,42 @@ import { OrderByEnum } from 'App/Enums/Sorted'
 export default class CompletedWorksController {
   public async index({ request, response }: HttpContextContract) {
     try {
-      const { sort, order } = request.qs() as IQueryParams
+      const { sort, order, offset = 0, limit = 20 } = request.qs() as IQueryParams
       const works = await CompletedWork
         .query()
+        .offset(offset)
+        .limit(limit)
         .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
         .preload('work_producer')
+        .preload('substation', query => query.preload('voltage_class'))
+      const serializeWorks = works.map(work => {
+        return work.serialize({
+          fields: {
+            pick: ['id', 'description', 'note', 'dateCompletion', 'createdAt']
+          },
+          relations: {
+            work_producer: {
+              fields: {
+                pick: ['id', 'shortUserName']
+              }
+            },
+            substation: {
+              fields: {
+                pick: ['id', 'name', 'fullNameSubstation']
+              },
+              relations: {
+                voltage_class: {
+                  fields: {
+                    pick: ['name']
+                  }
+                }
+              }
+            }
+          }
+        })
+      })
 
-      return response.status(200).json(works)
+      return response.status(200).json(serializeWorks)
     } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
