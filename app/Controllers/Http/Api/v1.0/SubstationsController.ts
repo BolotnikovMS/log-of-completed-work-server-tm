@@ -110,7 +110,8 @@ export default class SubstationsController {
       const works = await CompletedWork
         .query()
         .where('substation_id', '=', params.id)
-        .if(offset && limit, query => query.offset(offset).limit(limit))
+        .offset(offset)
+        .limit(limit)
         .preload('work_producer')
       const serializeWorks = works.map(work => {
         return work.serialize({
