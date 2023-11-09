@@ -1,22 +1,14 @@
-import { CustomMessages, rules, schema } from '@ioc:Adonis/Core/Validator'
-
 import Hash from '@ioc:Adonis/Core/Hash'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import LoginValidator from 'App/Validators/LoginValidator'
+import RegisterValidator from 'App/Validators/RegisterValidator'
 import User from 'App/Models/User'
 
 export default class AuthController {
   public async login({ request, response, auth }: HttpContextContract) {
     console.log(request.body());
     try {
-      const loginSchema = schema.create({
-        username: schema.string([rules.trim()]),
-        password: schema.string()
-      })
-      const messages: CustomMessages = {
-        required: 'Поле {{ field }} является обязательным.',
-      }
-      const validatedData = await request.validate({ schema: loginSchema, messages })
-
+      const validatedData = await request.validate(LoginValidator)
       const user = await User.query()
         .where('username', '=', validatedData.username)
         .where('blocked', '=', false)
@@ -52,37 +44,7 @@ export default class AuthController {
 
   public async register({ request, response, auth }: HttpContextContract) {
     try {
-      const registerSchema = schema.create({
-        username: schema.string([rules.trim(), rules.unique({ table: 'users', column: 'username', caseInsensitive: true}), rules.minLength(2), rules.maxLength(20), rules.escape()]),
-        surname: schema.string([rules.trim(), rules.minLength(2), rules.maxLength(20), rules.escape()]),
-        name: schema.string([rules.trim(), rules.minLength(2), rules.maxLength(20), rules.escape()]),
-        patronymic: schema.string([
-          rules.trim(),
-          rules.minLength(2),
-          rules.maxLength(20),
-          rules.escape(),
-        ]),
-        position: schema.string([
-          rules.trim(),
-          rules.minLength(2),
-          rules.maxLength(40),
-          rules.escape(),
-        ]),
-        email: schema.string([
-          rules.trim(),
-          rules.email(),
-          rules.unique({ table: 'users', column: 'email', caseInsensitive: true }),
-          rules.escape(),
-        ]),
-        password: schema.string({}, [rules.minLength(6)]),
-      })
-      const messages: CustomMessages = {
-        required: 'Поле {{ field }} является обязательным.',
-        minLength: 'Минимальная длина {{ field }} - {{ options.minLength }} символа.',
-        maxLength: 'Максимальная длина {{ field }} - {{ options.maxLength }} символа.',
-        unique: 'Поле {{ field }} является уникальным!',
-      }
-      const validatedData = await request.validate({ schema: registerSchema, messages })
+      const validatedData = await request.validate(RegisterValidator)
       await User.create(validatedData)
 
       return response.status(201).json({ message: 'Create!' })
