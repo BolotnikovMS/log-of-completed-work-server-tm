@@ -32,21 +32,11 @@ export default class SubstationsController {
     }
   }
 
-  public async getInfoSubstation({ params, request, response }: HttpContextContract) {
+  public async getInfoSubstation({ params, response }: HttpContextContract) {
     try {
       const substation = await Substation.find(params.id)
 
       if (substation) {
-        const { offset = 0, limit = 10 } = request.qs() as IQueryParams
-
-        await substation.load('works', queryWork => {
-          queryWork
-            .if(offset && limit, query => query.offset(offset)).limit(limit)
-            // .if(start_date && end_date && +new Date(start_date) < +new Date(end_date), query => {
-            //   console.log(true);
-            //   query.whereBetween('date_completion', [new DateTime(start_date).toSQL(), new DateTime(end_date).toSQL()])
-            // })
-        })
         await substation.load('district')
         await substation.load('voltage_class')
         await substation.load('type_kp')
@@ -61,11 +51,6 @@ export default class SubstationsController {
             omit: ['user_id', 'district_id', 'voltage_classes_id', 'type_kp_id', 'head_controller_id', 'main_channel_id', 'backup_channel_id', 'additional_channel_id', 'gsm_id']
           },
           relations: {
-            works: {
-              fields: {
-                pick: ['id', 'description', 'note', 'date_completion']
-              }
-            },
             district: {
               fields: {
                 pick: ['id', 'name', 'short_name']
