@@ -1,11 +1,20 @@
+import { ActiveEnum } from 'App/Enums/Active'
 import HeadController from 'App/Models/HeadController'
 import HeadControllerValidator from 'App/Validators/HeadControllerValidator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { IQueryParams } from 'App/Interfaces/QueryParams'
+import { OrderByEnum } from 'App/Enums/Sorted'
 
 export default class HeadsController {
-  public async index({ response }: HttpContextContract) {
+  public async index({ response, request }: HttpContextContract) {
     try {
-      const headsController = await HeadController.query()
+      const { sort, order, active, offset = 0, limit = 15 } = request.qs() as IQueryParams
+      const headsController = await HeadController
+        .query()
+        .offset(offset)
+        .limit(limit)
+        .if(active, query => query.where('active', '=', ActiveEnum[active]))
+        .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
 
       return response.status(200).json(headsController)
     } catch (error) {
