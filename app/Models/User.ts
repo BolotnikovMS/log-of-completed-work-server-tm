@@ -1,4 +1,4 @@
-import { BaseModel, HasOne, beforeSave, column, computed, hasOne } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, BelongsTo, beforeSave, belongsTo, column, computed } from '@ioc:Adonis/Lucid/Orm'
 
 import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
@@ -11,11 +11,9 @@ export default class User extends BaseModel {
   @column({
     consume: (value: string): boolean => Boolean(value),
   })
-  public blocked: boolean
+  public active: boolean
 
-  @column({
-    
-  })
+  @column()
   public username: string
 
   @column()
@@ -31,7 +29,7 @@ export default class User extends BaseModel {
   public position: string
 
   @column()
-  public role_id: number
+  public roleId: number
 
   @column()
   public email: string
@@ -65,6 +63,6 @@ export default class User extends BaseModel {
     }
   }
 
-  @hasOne(() => Role)
-  public role: HasOne<typeof Role>
+  @belongsTo(() => Role)
+  public role: BelongsTo<typeof Role>
 }
