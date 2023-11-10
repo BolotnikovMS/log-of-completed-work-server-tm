@@ -1,4 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import SubstationService from 'App/Services/SubstationService'
 import TypeKpValidator from 'App/Validators/TypeKpValidator'
 import TypesKp from 'App/Models/TypesKp'
 
@@ -9,6 +10,18 @@ export default class TypesKpsController {
 
       return response.status(200).json(typesKp)
     } catch (error) {
+      return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
+    }
+  }
+
+  public async getSubstations({ params, request, response }: HttpContextContract) {
+    try {
+      const substations = await SubstationService.getSubstationByRelationId({colName: 'type_kp_id', id: params.id, request})
+
+      return response.status(200).json(substations)
+    } catch (error) {
+      console.log(error);
+
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
     }
   }

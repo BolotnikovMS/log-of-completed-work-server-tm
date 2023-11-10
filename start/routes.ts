@@ -26,6 +26,7 @@ Route.group(() => {
     .middleware('auth:api')
   Route.group(() => {
     Route.get('/', 'TypesKpsController.index')
+    Route.get('/:id/substations', 'TypesKpsController.getSubstations')
     Route.post('/', 'TypesKpsController.store')
     Route.patch('/:id', 'TypesKpsController.update')
     Route.delete('/:id', 'TypesKpsController.destroy')
