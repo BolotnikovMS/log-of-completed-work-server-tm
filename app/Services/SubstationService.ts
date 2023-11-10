@@ -15,7 +15,7 @@ export default class SubstationService {
     if (!id) throw new Error('Не передан id!')
     if (!colName) throw new Error('Не передано название столбца для выборки!')
 
-    const { sort, order, active, offset = 0, limit = 10 } = request.qs() as IQueryParams
+    const { sort, order, active, offset = 0, limit = 15 } = request.qs() as IQueryParams
     const substations = await Substation
       .query()
       .where(colName, '=', id)
@@ -24,7 +24,21 @@ export default class SubstationService {
       .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
       .if(active, query => query.where('active', '=', ActiveEnum[active]))
       .preload('voltage_class')
+    const serializeSubstations = substations.map(substation => {
+      return substation.serialize({
+        fields: {
+          pick: ['id', 'name', 'gsmId', 'rdu', 'active', 'fullNameSubstation']
+        },
+        relations: {
+          voltage_class: {
+            fields: {
+              pick: ['name']
+            }
+          }
+        }
+      })
+    })
 
-    return substations
+    return serializeSubstations
   }
 }
