@@ -8,6 +8,11 @@ Route.group(() => {
   Route.get('/logout', 'AuthController.logout')
     .middleware('auth:api')
   Route.group(() => {
+    Route.get('/', 'UsersController.index')
+  })
+    .prefix('/users')
+    .middleware('auth:api')
+  Route.group(() => {
     Route.get('/', 'DistrictsController.index')
     Route.get('/:id/substations', 'DistrictsController.getSubstations')
     Route.post('/', 'DistrictsController.store')
