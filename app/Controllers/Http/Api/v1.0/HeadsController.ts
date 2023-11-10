@@ -4,6 +4,7 @@ import HeadControllerValidator from 'App/Validators/HeadControllerValidator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { IQueryParams } from 'App/Interfaces/QueryParams'
 import { OrderByEnum } from 'App/Enums/Sorted'
+import SubstationService from 'App/Services/SubstationService'
 
 export default class HeadsController {
   public async index({ response, request }: HttpContextContract) {
@@ -18,6 +19,18 @@ export default class HeadsController {
 
       return response.status(200).json(headsController)
     } catch (error) {
+      return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
+    }
+  }
+
+  public async getSubstations({ params, request, response }: HttpContextContract) {
+    try {
+      const substations = await SubstationService.getSubstationByRelationId({colName: 'head_controller_id', id: params.id, request})
+
+      return response.status(200).json(substations)
+    } catch (error) {
+      console.log(error);
+
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
     }
   }
