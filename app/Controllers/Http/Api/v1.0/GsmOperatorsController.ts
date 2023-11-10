@@ -26,22 +26,8 @@ export default class GsmOperatorsController {
   public async getSubstations({ params, request, response }: HttpContextContract) {
     try {
       const substations = await SubstationService.getSubstationByRelationId({colName: 'gsm_id', id: params.id, request})
-      const serializeSubstations = substations.map(substation => {
-        return substation.serialize({
-          fields: {
-            pick: ['id', 'name', 'gsmId', 'rdu', 'active', 'fullNameSubstation']
-          },
-          relations: {
-            voltage_class: {
-              fields: {
-                pick: ['name']
-              }
-            }
-          }
-        })
-      })
 
-      return response.status(200).json(serializeSubstations)
+      return response.status(200).json(substations)
     } catch (error) {
       console.log(error);
 
