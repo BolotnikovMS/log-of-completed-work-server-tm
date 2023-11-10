@@ -11,7 +11,7 @@ export default class AuthController {
       const validatedData = await request.validate(LoginValidator)
       const user = await User.query()
         .where('username', '=', validatedData.username)
-        .where('blocked', '=', false)
+        .where('active', '=', true)
         .firstOrFail()
 
       if (!(await Hash.verify(user.password, validatedData.password))) {
