@@ -9,6 +9,7 @@ Route.group(() => {
     .middleware('auth:api')
   Route.group(() => {
     Route.get('/', 'UsersController.index')
+    Route.get('/:id', 'UsersController.show')
   })
     .prefix('/users')
     .middleware('auth:api')

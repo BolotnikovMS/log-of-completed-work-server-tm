@@ -40,7 +40,35 @@ export default class UsersController {
 
   public async store({}: HttpContextContract) {}
 
-  public async show({}: HttpContextContract) {}
+  public async show({ params, response }: HttpContextContract) {
+    try {
+      const user = await User.find(params.id)
+
+      if (user) {
+        await user.load('role')
+        const serializeUser = user.serialize({
+          fields: {
+            omit: ['roleId']
+          },
+          relations: {
+            role: {
+              fields: {
+                pick: ['name']
+              }
+            }
+          }
+        })
+
+        return response.status(200).json(serializeUser)
+      }
+
+      return response.status(404).json({ message: 'Не найдено!' })
+    } catch (error) {
+      console.log(error)
+
+      return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
+    }
+  }
 
   public async update({}: HttpContextContract) {}
 
