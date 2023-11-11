@@ -7,8 +7,9 @@ import { OrderByEnum } from 'App/Enums/Sorted'
 import Substation from 'App/Models/Substation'
 
 export default class DistrictsController {
-  public async index({ request, response }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('DistrictPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
       const { sort, order, active } = request.qs() as IQueryParams
       const districts = await District
         .query()
@@ -22,8 +23,10 @@ export default class DistrictsController {
     }
   }
 
-  public async getSubstations({ params, request, response }: HttpContextContract) {
+  public async getSubstations({ params, request, response, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('DistrictPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const district = await District.find(params.id)
 
       if (district) {
@@ -43,8 +46,10 @@ export default class DistrictsController {
     }
   }
 
-  public async store({ request, response, auth }: HttpContextContract) {
+  public async store({ request, response, auth, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('DistrictPolicy').denies('create')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const validatedData = await request.validate(DistrictValidator)
       const district = await District.create({userId: auth?.user?.id, ...validatedData})
 
@@ -54,8 +59,10 @@ export default class DistrictsController {
     }
   }
 
-  public async update({ params, request, response }: HttpContextContract) {
+  public async update({ params, request, response, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('DistrictPolicy').denies('update')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const district  = await District.find(params.id)
 
       if (district) {
@@ -72,8 +79,10 @@ export default class DistrictsController {
     }
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('DistrictPolicy').denies('delete')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const district = await District.find(params.id)
 
       if (district) {
