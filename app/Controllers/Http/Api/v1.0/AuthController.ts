@@ -23,6 +23,8 @@ export default class AuthController {
 
       return token
     } catch (error) {
+      console.log(error);
+
       return response.status(403).json(error.messages)
     }
   }
