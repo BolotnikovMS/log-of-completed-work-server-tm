@@ -2,6 +2,7 @@ import { ActiveEnum } from 'App/Enums/Active'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { IQueryParams } from 'App/Interfaces/QueryParams'
 import { OrderByEnum } from 'App/Enums/Sorted'
+import RegisterValidator from 'App/Validators/RegisterValidator'
 import User from 'App/Models/User'
 
 export default class UsersController {
@@ -38,7 +39,16 @@ export default class UsersController {
     }
   }
 
-  public async store({}: HttpContextContract) {}
+  public async create({ request, response }: HttpContextContract) {
+    try {
+      const validatedData = await request.validate(RegisterValidator)
+      await User.create(validatedData)
+
+      return response.status(201).json({ message: 'Create!' })
+    } catch (error) {
+      return response.status(401).json(error.messages)
+    }
+  }
 
   public async show({ params, response }: HttpContextContract) {
     try {

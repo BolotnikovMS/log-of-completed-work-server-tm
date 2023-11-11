@@ -4,12 +4,12 @@ Route.group(() => {
   Route.get('/', 'HomeController.index')
     .middleware('auth:api')
   Route.post('/login', 'AuthController.login')
-  Route.post('/register', 'AuthController.register')
   Route.get('/logout', 'AuthController.logout')
     .middleware('auth:api')
   Route.group(() => {
     Route.get('/', 'UsersController.index')
     Route.get('/:id', 'UsersController.show')
+    Route.post('/create-account', 'UsersController.create')
   })
     .prefix('/users')
     .middleware('auth:api')
