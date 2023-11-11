@@ -5,8 +5,10 @@ import Substation from 'App/Models/Substation'
 import SubstationValidator from 'App/Validators/SubstationValidator'
 
 export default class SubstationsController {
-  public async index({ response }: HttpContextContract) {
+  public async index({ response, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('SubstationPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const substations = await Substation.query()
       const serializeSubstation = substations.map(substation => substation.serialize({
         fields: {
@@ -20,8 +22,10 @@ export default class SubstationsController {
     }
   }
 
-  public async store({ request, response, auth }: HttpContextContract) {
+  public async store({ request, response, auth, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('SubstationPolicy').denies('create')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const validatedData = await request.validate(SubstationValidator)
       // console.log('validatedData: ', validatedData);
       const substation = await Substation.create({userId: auth?.user?.id, ...validatedData})
@@ -32,8 +36,10 @@ export default class SubstationsController {
     }
   }
 
-  public async getInfoSubstation({ params, response }: HttpContextContract) {
+  public async getInfoSubstation({ params, response, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('SubstationPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const substation = await Substation.find(params.id)
 
       if (substation) {
@@ -104,8 +110,10 @@ export default class SubstationsController {
     }
   }
 
-  public async getSubstationWorks({ params, request, response }: HttpContextContract) {
+  public async getSubstationWorks({ params, request, response, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('SubstationPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const { offset = 0, limit = 10 } = request.qs() as IQueryParams
       const works = await CompletedWork
         .query()
@@ -135,8 +143,10 @@ export default class SubstationsController {
     }
   }
 
-  public async update({ params, request, response }: HttpContextContract) {
+  public async update({ params, request, response, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('SubstationPolicy').denies('update')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const substation = await Substation.find(params.id)
 
       if (substation) {
@@ -153,8 +163,10 @@ export default class SubstationsController {
     }
   }
 
-  public async destroy({ params, response }: HttpContextContract) {
+  public async destroy({ params, response, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('SubstationPolicy').denies('delete')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const substation = await Substation.find(params.id)
 
       if (substation) {
