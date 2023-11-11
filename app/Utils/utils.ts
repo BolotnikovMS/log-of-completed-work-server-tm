@@ -1,3 +1,6 @@
+import { RolesEnum } from 'App/Enums/Roles'
+import User from 'App/Models/User'
+
 /**
  * Возвращает принимаемый текст после замены экранированных символов.
  * @param {string} text Текст, где есть экранированные символы.
@@ -17,3 +20,12 @@ export const replacementEscapeSymbols = (text: string | null): string | null => 
 
   return text
 }
+
+/**
+ * Возвращает true/false, в зависимости от того принадлежит пользователь роли или нет.
+ * @param {User} user Объект пользователя.
+ * @param {string} roleName Название роли.
+ * @returns {boolean} true/false.
+ */
+
+export const checkUserRole = (user: User, roleName: string): boolean => user.roleId === +RolesEnum[roleName]
