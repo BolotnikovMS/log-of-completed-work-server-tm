@@ -55,5 +55,12 @@ export const { actions } = Bouncer
 */
 export const { policies } = Bouncer.registerPolicies({
   DistrictPolicy: () => import('App/Policies/DistrictPolicy'),
-  SubstationPolicy: () => import('App/Policies/SubstationPolicy')
+  SubstationPolicy: () => import('App/Policies/SubstationPolicy'),
+  UserPolicy: () => import('App/Policies/UserPolicy'),
+  ChannelTypePolicy: () => import('App/Policies/ChannelTypePolicy'),
+  CompletedWorkPolicy: () => import('App/Policies/CompletedWorkPolicy'),
+  GsmOperatorPolicy: () => import('App/Policies/GsmOperatorPolicy'),
+  HeadControllerPolicy: () => import('App/Policies/HeadControllerPolicy'),
+  TypeKpPolicy: () => import('App/Policies/TypeKpPolicy'),
+  VoltageClassPolicy: () => import('App/Policies/VoltageClassPolicy'),
 })
