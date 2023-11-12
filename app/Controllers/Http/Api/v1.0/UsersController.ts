@@ -6,8 +6,9 @@ import RegisterValidator from 'App/Validators/RegisterValidator'
 import User from 'App/Models/User'
 
 export default class UsersController {
-  public async index({ response, request }: HttpContextContract) {
+  public async index({ response, request, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('UserPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
       const { active, sort, order, offset = 0, limit = 15 } = request.qs() as IQueryParams
       const users = await User
         .query()
@@ -39,8 +40,10 @@ export default class UsersController {
     }
   }
 
-  public async create({ request, response }: HttpContextContract) {
+  public async create({ request, response, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('UserPolicy').denies('create')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const validatedData = await request.validate(RegisterValidator)
       await User.create(validatedData)
 
@@ -50,8 +53,10 @@ export default class UsersController {
     }
   }
 
-  public async show({ params, response }: HttpContextContract) {
+  public async show({ params, response, bouncer }: HttpContextContract) {
     try {
+      if (await bouncer.with('UserPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+
       const user = await User.find(params.id)
 
       if (user) {
