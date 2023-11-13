@@ -21,7 +21,7 @@ Route.group(() => {
     Route.delete('/:id', 'DistrictsController.destroy')
   })
     .prefix('/districts')
-    .middleware('auth:api')
+    // .middleware('auth:api')
   Route.group(() => {
     Route.get('/', 'VoltageClassesController.index')
     Route.post('/', 'VoltageClassesController.store')

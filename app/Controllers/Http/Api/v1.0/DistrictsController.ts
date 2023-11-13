@@ -9,7 +9,7 @@ import Substation from 'App/Models/Substation'
 export default class DistrictsController {
   public async index({ request, response, bouncer }: HttpContextContract) {
     try {
-      if (await bouncer.with('DistrictPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+      // if (await bouncer.with('DistrictPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
       const { sort, order, active } = request.qs() as IQueryParams
       const districts = await District
         .query()
