@@ -25,7 +25,7 @@ export default class DistrictsController {
 
   public async getSubstations({ params, request, response, bouncer }: HttpContextContract) {
     try {
-      if (await bouncer.with('DistrictPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+      // if (await bouncer.with('DistrictPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
 
       const district = await District.find(params.id)
 
@@ -48,13 +48,15 @@ export default class DistrictsController {
 
   public async store({ request, response, auth, bouncer }: HttpContextContract) {
     try {
-      if (await bouncer.with('DistrictPolicy').denies('create')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+      // if (await bouncer.with('DistrictPolicy').denies('create')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
 
       const validatedData = await request.validate(DistrictValidator)
-      const district = await District.create({userId: auth?.user?.id, ...validatedData})
+      const district = await District.create({userId: auth?.user?.id || 1, ...validatedData})
 
       return response.status(201).json(district)
     } catch (error) {
+      console.log(error);
+
       return response.status(400).json(error.messages.errors)
     }
   }
