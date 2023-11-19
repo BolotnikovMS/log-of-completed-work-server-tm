@@ -10,11 +10,14 @@ export default class DistrictsController {
   public async index({ request, response, bouncer }: HttpContextContract) {
     try {
       // if (await bouncer.with('DistrictPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
-      const { sort, order, active } = request.qs() as IQueryParams
+      const { sort, order, offset = 0, limit = 15, active } = request.qs() as IQueryParams
       const districts = await District
         .query()
+        .offset(offset)
+        .limit(limit)
         .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
         .if(active, query => query.where('active', ActiveEnum[active]))
+
 
       return response.status(200).json(districts)
     } catch (error) {
@@ -33,6 +36,7 @@ export default class DistrictsController {
         const { sort, order, active } = request.qs() as IQueryParams
         const substations = await Substation
           .query()
+          .where('district_id', '=', district.id)
           .if(active, query => query.where('active', '=', ActiveEnum[active]))
           .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
 
