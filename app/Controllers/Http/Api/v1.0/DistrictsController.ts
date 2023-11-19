@@ -10,16 +10,15 @@ export default class DistrictsController {
   public async index({ request, response, bouncer }: HttpContextContract) {
     try {
       // if (await bouncer.with('DistrictPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
-      const { sort, order, offset = 0, limit = 15, active } = request.qs() as IQueryParams
+      const { sort, order, page, limit, active } = request.qs() as IQueryParams
       const districts = await District
         .query()
-        .offset(offset)
-        .limit(limit)
         .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
         .if(active, query => query.where('active', ActiveEnum[active]))
+        .if(page && limit, query => query.paginate(page, limit))
+      const total = (await District.query().count('* as total'))[0].$extras.total
 
-
-      return response.status(200).json(districts)
+      return response.status(200).json({ meta: {total}, data: districts })
     } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
