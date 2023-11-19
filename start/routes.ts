@@ -75,7 +75,7 @@ Route.group(() => {
     Route.delete('/:id', 'SubstationsController.destroy')
   })
     .prefix('/substations')
-    .middleware('auth:api')
+    // .middleware('auth:api')
   Route.group(() => {
     Route.get('/', 'CompletedWorksController.index')
     Route.post('/', 'CompletedWorksController.store')
