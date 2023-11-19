@@ -1,22 +1,29 @@
+import { ActiveEnum } from 'App/Enums/Active'
 import CompletedWork from 'App/Models/CompletedWork'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { IQueryParams } from 'App/Interfaces/QueryParams'
+import { OrderByEnum } from 'App/Enums/Sorted'
 import Substation from 'App/Models/Substation'
 import SubstationValidator from 'App/Validators/SubstationValidator'
 
 export default class SubstationsController {
-  public async index({ response, bouncer }: HttpContextContract) {
+  public async index({ request, response, bouncer }: HttpContextContract) {
     try {
-      if (await bouncer.with('SubstationPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
-
-      const substations = await Substation.query()
+      // if (await bouncer.with('SubstationPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+      const { sort, order, page, limit, active } = request.qs() as IQueryParams
+      const substations = await Substation
+        .query()
+        .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
+        .if(active, query => query.where('active', ActiveEnum[active]))
+        .if(page && limit, query => query.paginate(page, limit))
+      const total = (await Substation.query().count('* as total'))[0].$extras.total
       const serializeSubstation = substations.map(substation => substation.serialize({
         fields: {
           pick: ['id', 'active', 'name', 'rdu', 'slug']
         }
       }))
 
-      return response.status(200).json(serializeSubstation)
+      return response.status(200).json({ meta: {total}, data: substations })
     } catch (error) {
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
     }
