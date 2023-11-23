@@ -9,8 +9,8 @@ import User from 'App/Models/User'
 export const replacementEscapeSymbols = (text: string | null): string | null => {
   if (text === null) return null
 
-  const replSymbol: string[] = ["'", '"', '/', '<', '>']
-  const escapeSymbols: string[] = ['&#x27;', '&quot;', '&#x2F;', '&lt;', '&gt;']
+  const replSymbol: string[] = ["'", '"', '/', '<', '>', '`']
+  const escapeSymbols: string[] = ['&#x27;', '&quot;', '&#x2F;', '&lt;', '&gt;', '&#96;']
 
   escapeSymbols.forEach((symb: string, i: number): string | null => {
     if (text === null) return null
