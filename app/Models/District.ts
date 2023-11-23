@@ -1,6 +1,7 @@
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
 import { DateTime } from 'luxon'
+import { replacementEscapeSymbols } from 'App/Utils/utils'
 import { slugify } from '@ioc:Adonis/Addons/LucidSlugify'
 
 export default class District extends BaseModel {
@@ -15,10 +16,14 @@ export default class District extends BaseModel {
   })
   public active: boolean
 
-  @column()
+  @column({
+    consume: (value: string) => replacementEscapeSymbols(value)
+  })
   public name: string
 
-  @column()
+  @column({
+    consume: (value: string) => replacementEscapeSymbols(value)
+  })
   public shortName: string
 
   @column()
