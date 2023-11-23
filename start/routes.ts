@@ -29,7 +29,7 @@ Route.group(() => {
     Route.delete('/:id', 'VoltageClassesController.destroy')
   })
     .prefix('/voltage-classes')
-    .middleware('auth:api')
+    // .middleware('auth:api')
   Route.group(() => {
     Route.get('/', 'TypesKpsController.index')
     Route.get('/:id/substations', 'TypesKpsController.getSubstations')
