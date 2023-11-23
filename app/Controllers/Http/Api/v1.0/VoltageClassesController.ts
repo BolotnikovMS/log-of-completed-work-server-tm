@@ -1,13 +1,22 @@
+import { ActiveEnum } from 'App/Enums/Active'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { IQueryParams } from 'App/Interfaces/QueryParams'
+import { OrderByEnum } from 'App/Enums/Sorted'
 import VoltageClass from 'App/Models/VoltageClass'
 import VoltageClassValidator from 'App/Validators/VoltageClassValidator'
 
 export default class VoltageClassesController {
-  public async index({ response }: HttpContextContract) {
+  public async index({ request, response }: HttpContextContract) {
     try {
-      const voltageClasses = await VoltageClass.query()
+      const { active, limit, page, order, sort } = request.qs() as IQueryParams
+      const voltageClasses = await VoltageClass
+        .query()
+        .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
+        .if(active, query => query.where('active', ActiveEnum[active]))
+        .if(page && limit, query => query.paginate(page, limit))
+      const total = (await VoltageClass.query().count('* as total'))[0].$extras.total
 
-      return response.status(200).json(voltageClasses)
+      return response.status(200).json({ meta: {total}, data: voltageClasses })
     } catch (error) {
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
     }
