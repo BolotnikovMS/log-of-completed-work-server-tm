@@ -12,11 +12,6 @@ export default class District extends BaseModel {
   public userId: number
 
   @column({
-    consume: (value: string): boolean => Boolean(value),
-  })
-  public active: boolean
-
-  @column({
     consume: (value: string) => replacementEscapeSymbols(value)
   })
   public name: string

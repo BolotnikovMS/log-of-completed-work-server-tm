@@ -11,11 +11,6 @@ export default class GsmOperator extends BaseModel {
   @column()
   public userId: number
 
-  @column({
-    consume: (value: string): boolean => Boolean(value),
-  })
-  public active: boolean
-
   @column()
   public name: string
 
