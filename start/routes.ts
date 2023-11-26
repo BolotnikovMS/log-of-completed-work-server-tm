@@ -37,8 +37,8 @@ Route.group(() => {
     Route.patch('/:id', 'TypesKpsController.update')
     Route.delete('/:id', 'TypesKpsController.destroy')
   })
-    .prefix('/types-kps')
-    .middleware('auth:api')
+    .prefix('/types-kp')
+    // .middleware('auth:api')
   Route.group(() => {
     Route.get('/', 'HeadsController.index')
     Route.post('/', 'HeadsController.store')
