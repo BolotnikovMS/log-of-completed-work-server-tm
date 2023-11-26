@@ -10,11 +10,10 @@ export default class DistrictsController {
   public async index({ request, response, bouncer }: HttpContextContract) {
     try {
       // if (await bouncer.with('DistrictPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
-      const { sort, order, page, limit, active } = request.qs() as IQueryParams
+      const { sort, order, page, limit } = request.qs() as IQueryParams
       const districts = await District
         .query()
         .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
-        .if(active, query => query.where('active', ActiveEnum[active]))
         .if(page && limit, query => query.paginate(page, limit))
       const total = (await District.query().count('* as total'))[0].$extras.total
 
@@ -86,7 +85,7 @@ export default class DistrictsController {
 
   public async destroy({ params, response, bouncer }: HttpContextContract) {
     try {
-      if (await bouncer.with('DistrictPolicy').denies('delete')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+      // if (await bouncer.with('DistrictPolicy').denies('delete')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
 
       const district = await District.find(params.id)
 
