@@ -47,7 +47,7 @@ Route.group(() => {
     Route.delete('/:id', 'HeadsController.destroy')
   })
     .prefix('/head-controllers')
-    .middleware('auth:api')
+    // .middleware('auth:api')
   Route.group(() => {
     Route.get('/', 'ChannelTypesController.index')
     Route.post('/', 'ChannelTypesController.store')
