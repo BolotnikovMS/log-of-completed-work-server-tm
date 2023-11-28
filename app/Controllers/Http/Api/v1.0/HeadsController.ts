@@ -9,15 +9,14 @@ import SubstationService from 'App/Services/SubstationService'
 export default class HeadsController {
   public async index({ response, request }: HttpContextContract) {
     try {
-      const { sort, order, active, offset = 0, limit = 15 } = request.qs() as IQueryParams
+      const { sort, order, page, limit } = request.qs() as IQueryParams
       const headsController = await HeadController
         .query()
-        .offset(offset)
-        .limit(limit)
-        .if(active, query => query.where('active', '=', ActiveEnum[active]))
         .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
+        .if(page && limit, query => query.paginate(page, limit))
+      const total = (await HeadController.query().count('* as total'))[0].$extras.total
 
-      return response.status(200).json(headsController)
+      return response.status(200).json({ meta: {total}, data: headsController })
     } catch (error) {
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
     }
@@ -38,7 +37,7 @@ export default class HeadsController {
   public async store({ request, response, auth }: HttpContextContract) {
     try {
       const validatedData = await request.validate(HeadControllerValidator)
-      const headController = await HeadController.create({userId: auth?.user?.id, ...validatedData})
+      const headController = await HeadController.create({userId: auth?.user?.id || 1, ...validatedData})
 
       return response.status(201).json(headController)
     } catch (error) {
