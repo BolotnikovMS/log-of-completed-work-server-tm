@@ -1,4 +1,3 @@
-import { ActiveEnum } from 'App/Enums/Active'
 import HeadController from 'App/Models/HeadController'
 import HeadControllerValidator from 'App/Validators/HeadControllerValidator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
