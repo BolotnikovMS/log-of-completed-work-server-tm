@@ -21,6 +21,21 @@ export default class HeadsController {
     }
   }
 
+  public async getHeadController({ params, response }: HttpContextContract) {
+    try {
+      const headController = await HeadController.find(params.id)
+
+      if (headController) {
+        return response.status(200).json(headController)
+      }
+
+      return response.status(404).json({ message: 'Не найдено!' })
+    } catch (error) {
+      console.log('error: ', error);
+      return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
+    }
+  }
+
   public async getSubstations({ params, request, response }: HttpContextContract) {
     try {
       const substations = await SubstationService.getSubstationByRelationId({colName: 'head_controller_id', id: params.id, request})
