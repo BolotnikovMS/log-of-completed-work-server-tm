@@ -17,7 +17,7 @@ export default class DistrictsController {
         .if(page && limit, query => query.paginate(page, limit))
       const total = (await District.query().count('* as total'))[0].$extras.total
 
-      return response.status(200).json({ meta: {total}, data: districts })
+      return response.status(200).header('x-total-count', total).json({ meta: {total}, data: districts })
     } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
