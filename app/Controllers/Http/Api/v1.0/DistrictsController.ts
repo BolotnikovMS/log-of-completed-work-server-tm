@@ -17,7 +17,7 @@ export default class DistrictsController {
         .if(page && limit, query => query.paginate(page, limit))
       const total = (await District.query().count('* as total'))[0].$extras.total
 
-      return response.status(200).header('x-total-count', total).json({ meta: {total}, data: districts })
+      return response.status(200).header('total-count', total).json({ meta: {total}, data: districts})
     } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
@@ -65,7 +65,7 @@ export default class DistrictsController {
 
   public async update({ params, request, response, bouncer }: HttpContextContract) {
     try {
-      if (await bouncer.with('DistrictPolicy').denies('update')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+      // if (await bouncer.with('DistrictPolicy').denies('update')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
 
       const district  = await District.find(params.id)
 
@@ -73,6 +73,7 @@ export default class DistrictsController {
         const validateData = await request.validate(DistrictValidator)
         console.log(validateData);
         const updDistrict = await district.merge(validateData).save()
+        console.log('updDistrict: ', updDistrict.serialize());
 
         return response.status(200).json(updDistrict)
       }
