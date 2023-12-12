@@ -71,9 +71,7 @@ export default class DistrictsController {
 
       if (district) {
         const validateData = await request.validate(DistrictValidator)
-        console.log(validateData);
         const updDistrict = await district.merge(validateData).save()
-        console.log('updDistrict: ', updDistrict.serialize());
 
         return response.status(200).json(updDistrict)
       }
