@@ -1,4 +1,3 @@
-import { ActiveEnum } from 'App/Enums/Active'
 import GsmOperator from 'App/Models/GsmOperator'
 import GsmOperatorValidator from 'App/Validators/GsmOperatorValidator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
@@ -9,13 +8,13 @@ import SubstationService from 'App/Services/SubstationService'
 export default class GsmOperatorsController {
   public async index({ request, response }: HttpContextContract) {
     try {
-      const { active, sort, order } = request.qs() as IQueryParams
+      const { sort, order } = request.qs() as IQueryParams
       const gsmOperators = await GsmOperator
         .query()
-        .if(active, query => query.where('active', ActiveEnum[active]))
         .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
+      const total = (await GsmOperator.query().count('* as total'))[0].$extras.total
 
-      return response.status(200).json(gsmOperators)
+      return response.status(200).header('total-count', total).json(gsmOperators)
     } catch (error) {
       console.log(error);
 
@@ -38,7 +37,7 @@ export default class GsmOperatorsController {
   public async store({ request, response, auth }: HttpContextContract) {
     try {
       const validatedData = await request.validate(GsmOperatorValidator)
-      const gsmOperator = await GsmOperator.create({userId: auth?.user?.id, ...validatedData})
+      const gsmOperator = await GsmOperator.create({userId: auth?.user?.id || 1, ...validatedData})
 
       return response.status(201).json(gsmOperator)
     } catch (error) {

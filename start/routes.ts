@@ -65,7 +65,7 @@ Route.group(() => {
     Route.delete('/:id', 'GsmOperatorsController.destroy')
   })
     .prefix('/gsm-operators')
-    .middleware('auth:api')
+    // .middleware('auth:api')
 
   Route.group(() => {
     Route.get('/', 'SubstationsController.index')
