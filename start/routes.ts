@@ -56,7 +56,7 @@ Route.group(() => {
     Route.delete('/:id', 'ChannelTypesController.destroy')
   })
     .prefix('/channel-types')
-    .middleware('auth:api')
+    // .middleware('auth:api')
   Route.group(() => {
     Route.get('/', 'GsmOperatorsController.index')
     Route.get('/:id/substations', 'GsmOperatorsController.getSubstations')

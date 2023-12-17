@@ -8,9 +8,9 @@ export default class ChannelTypeValidator {
   public schema = schema.create({
     name: schema.string([
       rules.trim(),
-      rules.escape(),
       rules.minLength(3),
       rules.maxLength(150),
+      rules.escape(),
     ]),
     active: schema.boolean.optional(),
   })
