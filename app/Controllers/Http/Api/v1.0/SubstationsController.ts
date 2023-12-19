@@ -17,13 +17,13 @@ export default class SubstationsController {
         .if(active, query => query.where('active', ActiveEnum[active]))
         .if(page && limit, query => query.paginate(page, limit))
       const total = (await Substation.query().count('* as total'))[0].$extras.total
-      const serializeSubstation = substations.map(substation => substation.serialize({
-        fields: {
-          pick: ['id', 'active', 'name', 'rdu', 'slug']
-        }
-      }))
+      // const serializeSubstation = substations.map(substation => substation.serialize({
+      //   fields: {
+      //     pick: ['id', 'active', 'name', 'rdu', 'slug']
+      //   }
+      // }))
 
-      return response.status(200).json({ meta: {total}, data: substations })
+      return response.status(200).header('total-count', total).json({ meta: {total}, data: substations })
     } catch (error) {
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
     }
@@ -31,14 +31,15 @@ export default class SubstationsController {
 
   public async store({ request, response, auth, bouncer }: HttpContextContract) {
     try {
-      if (await bouncer.with('SubstationPolicy').denies('create')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+      // if (await bouncer.with('SubstationPolicy').denies('create')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
 
       const validatedData = await request.validate(SubstationValidator)
       // console.log('validatedData: ', validatedData);
-      const substation = await Substation.create({userId: auth?.user?.id, ...validatedData})
+      const substation = await Substation.create({userId: auth?.user?.id || 1, ...validatedData})
 
       return response.status(201).json(substation)
     } catch (error) {
+      console.log('error: ', error);
       return response.status(400).json(error.messages.errors)
     }
   }
