@@ -153,7 +153,7 @@ export default class SubstationsController {
 
   public async update({ params, request, response, bouncer }: HttpContextContract) {
     try {
-      if (await bouncer.with('SubstationPolicy').denies('update')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+      // if (await bouncer.with('SubstationPolicy').denies('update')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
 
       const substation = await Substation.find(params.id)
 
@@ -173,7 +173,7 @@ export default class SubstationsController {
 
   public async destroy({ params, response, bouncer }: HttpContextContract) {
     try {
-      if (await bouncer.with('SubstationPolicy').denies('delete')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+      // if (await bouncer.with('SubstationPolicy').denies('delete')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
 
       const substation = await Substation.find(params.id)
 
