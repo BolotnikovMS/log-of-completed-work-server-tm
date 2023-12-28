@@ -84,7 +84,7 @@ Route.group(() => {
     Route.delete('/:id', 'CompletedWorksController.destroy')
   })
     .prefix('/completed-works')
-    .middleware('auth:api')
+    // .middleware('auth:api')
 })
 .namespace('App/Controllers/Http/Api/v1.0')
 .prefix('/api/v1.0/')

@@ -1,8 +1,8 @@
 import { BaseModel, BelongsTo, belongsTo, column } from '@ioc:Adonis/Lucid/Orm'
 
-import { DateTime } from 'luxon'
 import Substation from 'App/Models/Substation'
 import User from 'App/Models/User'
+import { DateTime } from 'luxon'
 
 export default class CompletedWork extends BaseModel {
   @column({ isPrimary: true })
@@ -21,7 +21,7 @@ export default class CompletedWork extends BaseModel {
   public description: string
 
   @column()
-  public note: string
+  public note: string | null
 
   @column.dateTime({
     serialize: (value) => value.toFormat('dd.MM.yyyy')

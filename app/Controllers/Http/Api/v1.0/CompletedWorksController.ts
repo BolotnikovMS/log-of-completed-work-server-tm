@@ -1,20 +1,20 @@
+import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { OrderByEnum } from 'App/Enums/Sorted'
+import { IQueryParams } from 'App/Interfaces/QueryParams'
 import CompletedWork from 'App/Models/CompletedWork'
 import CompletedWorkValidator from 'App/Validators/CompletedWorkValidator'
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { IQueryParams } from 'App/Interfaces/QueryParams'
-import { OrderByEnum } from 'App/Enums/Sorted'
 
 export default class CompletedWorksController {
   public async index({ request, response }: HttpContextContract) {
     try {
-      const { sort, order, offset = 0, limit = 20 } = request.qs() as IQueryParams
+      const { sort, order, page, limit } = request.qs() as IQueryParams
       const works = await CompletedWork
         .query()
-        .offset(offset)
-        .limit(limit)
         .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
+        .if(page && limit, query => query.paginate(page, limit))
         .preload('work_producer')
         .preload('substation', query => query.preload('voltage_class'))
+      const total = (await CompletedWork.query().count('* as total'))[0].$extras.total
       const serializeWorks = works.map(work => {
         return work.serialize({
           fields: {
@@ -42,7 +42,7 @@ export default class CompletedWorksController {
         })
       })
 
-      return response.status(200).json(serializeWorks)
+      return response.status(200).header('total-count', total).json({ meta: {total}, data: serializeWorks })
     } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
