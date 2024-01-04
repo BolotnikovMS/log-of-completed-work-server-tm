@@ -12,7 +12,7 @@ Route.group(() => {
     Route.post('/create-account', 'UsersController.create')
   })
     .prefix('/users')
-    .middleware('auth:api')
+    // .middleware('auth:api')
   Route.group(() => {
     Route.get('/', 'DistrictsController.index')
     Route.get('/:id/substations', 'DistrictsController.getSubstations')

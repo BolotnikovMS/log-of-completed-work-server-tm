@@ -52,7 +52,7 @@ export default class CompletedWorksController {
   public async store({ request, response, auth }: HttpContextContract) {
     try {
       const validatedData = await request.validate(CompletedWorkValidator)
-      const work = await CompletedWork.create({userId: auth?.user?.id, ...validatedData})
+      const work = await CompletedWork.create({userId: auth?.user?.id || 1, ...validatedData})
 
       return response.status(201).json(work)
     } catch (error) {
