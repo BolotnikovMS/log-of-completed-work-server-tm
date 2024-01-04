@@ -1,26 +1,26 @@
-import { ActiveEnum } from 'App/Enums/Active'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { IQueryParams } from 'App/Interfaces/QueryParams'
+import { ActiveEnum } from 'App/Enums/Active'
 import { OrderByEnum } from 'App/Enums/Sorted'
-import RegisterValidator from 'App/Validators/RegisterValidator'
+import { IQueryParams } from 'App/Interfaces/QueryParams'
 import User from 'App/Models/User'
+import RegisterValidator from 'App/Validators/RegisterValidator'
 
 export default class UsersController {
   public async index({ response, request, bouncer }: HttpContextContract) {
     try {
-      if (await bouncer.with('UserPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
-      const { active, sort, order, offset = 0, limit = 15 } = request.qs() as IQueryParams
+      // if (await bouncer.with('UserPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+      const { active, sort, order, page, limit } = request.qs() as IQueryParams
       const users = await User
         .query()
-        .offset(offset)
-        .limit(limit)
-        .if(active, query => query.where('active', '=', ActiveEnum[active]))
         .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
+        .if(page && limit, query => query.paginate(page, limit))
+        .if(active, query => query.where('active', '=', ActiveEnum[active]))
         .preload('role')
+      const total = (await User.query().count('* as total'))[0].$extras.total
       const serializeUsers = users.map(user => {
         return user.serialize({
           fields: {
-            omit: ['roleId']
+            omit: ['roleId', 'createdAt', 'updatedAt', 'rememberMeToken']
           },
           relations: {
             role: {
@@ -32,7 +32,7 @@ export default class UsersController {
         })
       })
 
-      return response.status(200).json(serializeUsers)
+      return response.status(200).header('total-count', total).json({ meta: {total}, data: serializeUsers })
     } catch (error) {
       console.log(error);
 
