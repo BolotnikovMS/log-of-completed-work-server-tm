@@ -7,7 +7,7 @@ import CompletedWorkValidator from 'App/Validators/CompletedWorkValidator'
 export default class CompletedWorksController {
   public async index({ request, response }: HttpContextContract) {
     try {
-      const { sort, order, page, limit } = request.qs() as IQueryParams
+      const { sort = 'dateCompletion', order = 'desc', page, limit } = request.qs() as IQueryParams
       const works = await CompletedWork
         .query()
         .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
