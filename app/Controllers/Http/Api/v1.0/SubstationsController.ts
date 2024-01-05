@@ -1,8 +1,8 @@
-import { ActiveEnum } from 'App/Enums/Active'
-import CompletedWork from 'App/Models/CompletedWork'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { IQueryParams } from 'App/Interfaces/QueryParams'
+import { ActiveEnum } from 'App/Enums/Active'
 import { OrderByEnum } from 'App/Enums/Sorted'
+import { IQueryParams } from 'App/Interfaces/QueryParams'
+import CompletedWork from 'App/Models/CompletedWork'
 import Substation from 'App/Models/Substation'
 import SubstationValidator from 'App/Validators/SubstationValidator'
 
@@ -16,6 +16,7 @@ export default class SubstationsController {
         .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
         .if(active, query => query.where('active', ActiveEnum[active]))
         .if(page && limit, query => query.paginate(page, limit))
+        .preload('voltage_class')
       const total = (await Substation.query().count('* as total'))[0].$extras.total
       // const serializeSubstation = substations.map(substation => substation.serialize({
       //   fields: {
