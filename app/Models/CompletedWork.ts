@@ -23,9 +23,7 @@ export default class CompletedWork extends BaseModel {
   @column()
   public note: string | null
 
-  @column.dateTime({
-    serialize: (value) => value.toFormat('dd.MM.yyyy')
-  })
+  @column.dateTime()
   public dateCompletion: DateTime
 
   @column.dateTime({ autoCreate: true })
