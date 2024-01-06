@@ -1,23 +1,15 @@
-import { ActiveEnum } from 'App/Enums/Active'
-import District from 'App/Models/District'
-import DistrictValidator from 'App/Validators/DistrictValidator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { IQueryParams } from 'App/Interfaces/QueryParams'
-import { OrderByEnum } from 'App/Enums/Sorted'
-import Substation from 'App/Models/Substation'
+import District from 'App/Models/District'
+import DistrictService from 'App/Services/DistrictService'
+import DistrictValidator from 'App/Validators/DistrictValidator'
 
 export default class DistrictsController {
   public async index({ request, response, bouncer }: HttpContextContract) {
     try {
       // if (await bouncer.with('DistrictPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
-      const { sort, order, page, limit } = request.qs() as IQueryParams
-      const districts = await District
-        .query()
-        .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
-        .if(page && limit, query => query.paginate(page, limit))
-      const total = (await District.query().count('* as total'))[0].$extras.total
+			const districts = await DistrictService.getDistricts(request)
 
-      return response.status(200).header('total-count', total).json({ meta: {total}, data: districts})
+			return response.status(200).header('total-count', districts.meta.total).json(districts)
     } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
@@ -28,17 +20,19 @@ export default class DistrictsController {
     try {
       // if (await bouncer.with('DistrictPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
 
-      const district = await District.find(params.id)
+			const district = await District.find(params.id)
 
       if (district) {
-        const { sort, order, active } = request.qs() as IQueryParams
-        const substations = await Substation
-          .query()
-          .where('district_id', '=', district.id)
-          .if(active, query => query.where('active', '=', ActiveEnum[active]))
-          .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
+        // const { sort, order, active } = request.qs() as IQueryParams
+        // const substations = await Substation
+        //   .query()
+        //   .where('district_id', '=', district.id)
+        //   .if(active, query => query.where('active', '=', ActiveEnum[active]))
+        //   .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
 
-        return response.status(200).json(substations)
+				const substations = await DistrictService.getDistrictSubstations(district, request)
+
+				return response.status(200).header('total-count', substations.meta.total).json(substations)
       }
       return response.status(404).json({ message: 'Не найдено!' })
     } catch (error) {
