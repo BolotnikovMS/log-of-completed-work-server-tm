@@ -1,14 +1,14 @@
 import { BaseModel, BelongsTo, HasMany, HasOne, belongsTo, column, computed, hasMany, hasOne } from '@ioc:Adonis/Lucid/Orm'
 
+import { slugify } from '@ioc:Adonis/Addons/LucidSlugify'
 import ChannelType from 'App/Models/ChannelType'
 import CompletedWork from 'App/Models/CompletedWork'
-import { DateTime } from 'luxon'
 import District from 'App/Models/District'
 import GsmOperator from 'App/Models/GsmOperator'
 import HeadController from 'App/Models/HeadController'
 import TypesKp from 'App/Models/TypesKp'
 import VoltageClass from 'App/Models/VoltageClass'
-import { slugify } from '@ioc:Adonis/Addons/LucidSlugify'
+import { DateTime } from 'luxon'
 
 export default class Substation extends BaseModel {
   @column({ isPrimary: true })
@@ -127,7 +127,7 @@ export default class Substation extends BaseModel {
   })
   public additional_channel: BelongsTo<typeof ChannelType>
 
-  @belongsTo(() => ChannelType, {
+  @belongsTo(() => GsmOperator, {
     localKey: 'id',
     foreignKey: 'gsmId'
   })
