@@ -32,7 +32,7 @@ export default class SubstationsController {
     }
   }
 
-  public async getInfoSubstation({ params, response, bouncer }: HttpContextContract) {
+  public async getSubstation({ params, response, bouncer }: HttpContextContract) {
     try {
       // if (await bouncer.with('SubstationPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
 			// !! Попробовать сделать запрос в сервисе
