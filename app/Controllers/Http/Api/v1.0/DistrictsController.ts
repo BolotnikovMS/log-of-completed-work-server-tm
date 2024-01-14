@@ -1,6 +1,7 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import District from 'App/Models/District'
 import DistrictService from 'App/Services/DistrictService'
+import SubstationService from 'App/Services/SubstationService'
 import DistrictValidator from 'App/Validators/DistrictValidator'
 
 export default class DistrictsController {
@@ -23,17 +24,11 @@ export default class DistrictsController {
 			const district = await District.find(params.id)
 
       if (district) {
-        // const { sort, order, active } = request.qs() as IQueryParams
-        // const substations = await Substation
-        //   .query()
-        //   .where('district_id', '=', district.id)
-        //   .if(active, query => query.where('active', '=', ActiveEnum[active]))
-        //   .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
-
-				const substations = await DistrictService.getDistrictSubstations(district, request)
+				const substations = await SubstationService.getSubstations(request, district.id)
 
 				return response.status(200).header('total-count', substations.meta.total).json(substations)
       }
+
       return response.status(404).json({ message: 'Не найдено!' })
     } catch (error) {
       console.log(error);
