@@ -43,9 +43,6 @@ export default class SubstationService {
 		await substation.load('works')
 
 		const serializedSubstation = substation.serialize({
-			fields: {
-				omit: ['districtId', 'voltageClassesId', 'typeKpId', 'headControllerId', 'mainChannelId', 'backupChannelId', 'additionalChannelId', 'gsmId']
-			},
 			relations: {
 				district: {
 					fields: {
