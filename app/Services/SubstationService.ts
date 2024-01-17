@@ -12,7 +12,7 @@ interface IParamGetSubstationBy {
 }
 
 export default class SubstationService {
-	public static async getSubstations(req: RequestContract, districtId?: number): Promise<{meta: {total: number}, data: Substation[]}> {
+	public static async getSubstations(req: RequestContract, districtId?: number | undefined): Promise<{meta: {total: number}, data: Substation[]}> {
 		const { active, sort, order, page, limit } = req.qs() as IQueryParams
 		const substations = await Substation
 			.query()
