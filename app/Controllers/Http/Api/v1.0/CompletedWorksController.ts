@@ -1,48 +1,14 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { OrderByEnum } from 'App/Enums/Sorted'
-import { IQueryParams } from 'App/Interfaces/QueryParams'
 import CompletedWork from 'App/Models/CompletedWork'
+import CompletedWorkService from 'App/Services/CompletedWorkService'
 import CompletedWorkValidator from 'App/Validators/CompletedWorkValidator'
 
 export default class CompletedWorksController {
   public async index({ request, response }: HttpContextContract) {
     try {
-      const { sort = 'dateCompletion', order = 'desc', page, limit } = request.qs() as IQueryParams
-      const works = await CompletedWork
-        .query()
-        .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
-        .if(page && limit, query => query.paginate(page, limit))
-        .preload('work_producer')
-        .preload('substation', query => query.preload('voltage_class'))
-      const total = (await CompletedWork.query().count('* as total'))[0].$extras.total
-      const serializeWorks = works.map(work => {
-        return work.serialize({
-          fields: {
-            pick: ['id', 'description', 'note', 'dateCompletion', 'createdAt']
-          },
-          relations: {
-            work_producer: {
-              fields: {
-                pick: ['id', 'shortUserName']
-              }
-            },
-            substation: {
-              fields: {
-                pick: ['id', 'name', 'fullNameSubstation']
-              },
-              relations: {
-                voltage_class: {
-                  fields: {
-                    pick: ['name']
-                  }
-                }
-              }
-            }
-          }
-        })
-      })
+			const works = await CompletedWorkService.getCompletedWorks(request)
 
-      return response.status(200).header('total-count', total).json({ meta: {total}, data: serializeWorks })
+			return response.status(200).header('total-count', works.meta.total).json(works)
     } catch (error) {
       console.log(error);
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
