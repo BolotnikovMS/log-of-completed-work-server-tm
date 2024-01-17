@@ -1,7 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { IQueryParams } from 'App/Interfaces/QueryParams'
-import CompletedWork from 'App/Models/CompletedWork'
 import Substation from 'App/Models/Substation'
+import CompletedWorkService from 'App/Services/CompletedWorkService'
 import SubstationService from 'App/Services/SubstationService'
 import SubstationValidator from 'App/Validators/SubstationValidator'
 
@@ -52,31 +51,9 @@ export default class SubstationsController {
 
   public async getSubstationWorks({ params, request, response, bouncer }: HttpContextContract) {
     try {
-      if (await bouncer.with('SubstationPolicy').denies('view')) return response.status(403).json({ message: 'Недостаточно прав для выполнения операции!' })
+			const works = await CompletedWorkService.getCompletedWorks(request, params.id)
 
-      const { offset = 0, limit = 10 } = request.qs() as IQueryParams
-      const works = await CompletedWork
-        .query()
-        .where('substation_id', '=', params.id)
-        .offset(offset)
-        .limit(limit)
-        .preload('work_producer')
-      const serializeWorks = works.map(work => {
-        return work.serialize({
-          fields: {
-            pick: ['id', 'description', 'note', 'date_completion']
-          },
-          relations: {
-            work_producer: {
-              fields: {
-                pick: ['id', 'shortUserName']
-              }
-            }
-          }
-        })
-      })
-
-      return response.status(200).json(serializeWorks)
+			return response.status(200).header('total-count', works.meta.total).json(works)
     } catch (error) {
       console.log('error: ', error);
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
