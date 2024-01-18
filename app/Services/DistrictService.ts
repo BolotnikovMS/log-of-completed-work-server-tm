@@ -1,7 +1,7 @@
-import District from 'App/Models/District'
-import { IQueryParams } from 'App/Interfaces/QueryParams'
-import { OrderByEnum } from 'App/Enums/Sorted'
 import { RequestContract } from '@ioc:Adonis/Core/Request'
+import { OrderByEnum } from 'App/Enums/Sorted'
+import { IQueryParams } from 'App/Interfaces/QueryParams'
+import District from 'App/Models/District'
 
 export default class DistrictService {
 	public static async getDistricts(req: RequestContract): Promise<{meta: {total: number}, data: District[]}> {
