@@ -1,20 +1,14 @@
-import ChannelType from 'App/Models/ChannelType'
-import ChannelTypeValidator from 'App/Validators/ChannelTypeValidator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import { IQueryParams } from 'App/Interfaces/QueryParams'
-import { OrderByEnum } from 'App/Enums/Sorted'
+import ChannelType from 'App/Models/ChannelType'
+import ChannelTypeService from 'App/Services/ChannelTypeService'
+import ChannelTypeValidator from 'App/Validators/ChannelTypeValidator'
 
 export default class ChannelTypesController {
   public async index({ request, response }: HttpContextContract) {
     try {
-      const { sort, order, page, limit } = request.qs() as IQueryParams
-      const channelTypes = await ChannelType
-        .query()
-        .if(sort && order, query => query.orderBy(sort, OrderByEnum[order]))
-        .if(page && limit, query => query.paginate(page, limit))
-      const total = (await ChannelType.query().count('* as total'))[0].$extras.total
+      const channelTypes = await ChannelTypeService.getChannelTypes(request)
 
-      return response.status(200).header('total-count', total).json({ meta: {total}, data: channelTypes})
+      return response.status(200).header('total-count', channelTypes.meta.total).json(channelTypes)
     } catch (error) {
       return response.status(500).json({ message: 'Произошла ошибка при выполнении запроса!' })
     }
