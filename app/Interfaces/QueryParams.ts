@@ -9,4 +9,5 @@ export interface IQueryParams {
   active: string
   offset: number
   limit: number
+	substation: number
 }
